@@ -342,9 +342,9 @@ class NTFSVBR(Block):
         self.declare_field("dword", "checksum")
 
         # 0x54 Bootstrap code
-        self.declare_field("byte", "bootstrap_code", count=426)
+        #self.declare_field("byte", "bootstrap_code", count=426)
         # 0x01fe End of sector
-        self.declare_field("word", "end_of_sector")
+        self.declare_field("word", "end_of_sector", offset=0x1fe)
 
 
 class ClusterAccessor(object):
