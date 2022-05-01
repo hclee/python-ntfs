@@ -203,12 +203,10 @@ class NTFSDirectory(Directory, NTFSFileMetadataMixin):
         return ret
 
     def get_files(self):
-        return filter(lambda c: isinstance(c, NTFSFile),
-                      self.get_children())
+        return [c for c in self.get_children() if isinstance(c, NTFSFile)]
 
     def get_directories(self):
-        return filter(lambda c: isinstance(c, NTFSDirectory),
-                      self.get_children())
+        return [c for c in self.get_children() if isinstance(c, NTFSDirectory)]
 
     def get_parent_directory(self):
         return self._fs.get_record_parent(self._record)
@@ -359,6 +357,10 @@ class ClusterAccessor(object):
         self._cluster_size = cluster_size
 
     def __getitem__(self, index):
+        if isinstance(index, slice):
+            start = index.start if index else 0
+            stop = index.stop if index else len(self)
+            return self.__getslice__(start, stop)
         size = self._cluster_size
         start, end = index * size, (index + 1) * size
         g_logger.debug('Get clusters %s:%s', start, end)
@@ -416,6 +418,10 @@ class NonResidentAttributeData(object):
     def __getitem__(self, index):
         # TODO: clarify variable names and their units
         # units: bytes
+        if isinstance(index, slice):
+            start = index.start if index.start else 0
+            stop = index.stop if index.stop else len(self)
+            return self.__getslice__(start, stop)
         current_run_start_offset = 0
 
         if index < 0:
@@ -461,7 +467,7 @@ class NonResidentAttributeData(object):
         g_logger.debug("NonResidentAttributeData: getslice: "
                        "start: %x end: %x", start, stop)
         _len = len(self)
-        if stop == sys.maxint:
+        if stop == sys.maxsize:
             stop = _len
 
         if stop < 0:
@@ -529,9 +535,9 @@ class NonResidentAttributeData(object):
 class NTFSFilesystem(object):
     def __init__(self, volume, cluster_size=None):
         oem_id = volume[3:7]
-        assert oem_id == 'NTFS', 'Wrong OEM signature'
+        assert oem_id == b'NTFS', 'Wrong OEM signature'
 
-        super(NTFSFilesystem, self).__init__()
+        super().__init__()
         self._volume = volume
         self._cluster_size = cluster_size
         vbr = self._vbr = NTFSVBR(volume)
@@ -644,7 +650,7 @@ class NTFSFilesystem(object):
         #  such as 8.3, POSIX, or Windows,  but the same ultimate MFT reference
         ret = {}  # type: dict(int, MFTRecord)
         if not record.is_directory():
-            return ret.values()
+            return list(ret.values())
 
         # TODO: cleanup the duplication here
         try:
@@ -674,7 +680,7 @@ class NTFSFilesystem(object):
                     continue
                 ret[ref] = self._enumerator.get_record(ref)
 
-        return ret.values()
+        return list(ret.values())
 
 
 def main():

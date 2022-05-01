@@ -22,7 +22,7 @@ import sys
 import types
 import struct
 import logging
-import cPickle
+import pickle
 from datetime import datetime
 
 g_logger = logging.getLogger("ntfs.BinaryParser")
@@ -40,7 +40,7 @@ def unpack_from(fmt, buf, off=0):
     Theres an extra allocation and copy, but there's no getting
       around that.
     """
-    if isinstance(buf, basestring):
+    if isinstance(buf, str):
         return struct.unpack_from(fmt, buf, off)
     elif not hasattr(buf, "__unpackable__"):
         return struct.unpack_from(fmt, buf, off)
@@ -54,7 +54,7 @@ def unpack(fmt, string):
     """
     Like the shimmed unpack_from, but for struct.unpack.
     """
-    if isinstance(buf, basestring):
+    if isinstance(buf, str):
         return struct.unpack(fmt, string)
     elif not hasattr(buf, "__unpackable__"):
         return struct.unpack(fmt, string)
@@ -109,7 +109,7 @@ def hex_dump(src, start_addr=0):
         num_spaces = (start_addr % length)
         num_chars = length - (start_addr % length)
 
-        spaces = " ".join(["  " for i in xrange(num_spaces)])
+        spaces = " ".join(["  " for i in range(num_spaces)])
         s = src[0:num_chars]
         hexa = ' '.join(["%02X" % ord(x) for x in s])
         printable = s.translate(FILTER)
@@ -121,7 +121,7 @@ def hex_dump(src, start_addr=0):
         src = src[num_chars:]
         remainder_start_addr = base_addr + length
 
-    for i in xrange(0, len(src), length):
+    for i in range(0, len(src), length):
         s = src[i:i + length]
         hexa = ' '.join(["%02X" % ord(x) for x in s])
         printable = s.translate(FILTER)
@@ -152,7 +152,7 @@ class memoize(decoratorargs):
             self.newer = newer
 
     def __init__(self, func, capacity=1000,
-                 keyfunc=lambda *args, **kwargs: cPickle.dumps((args,
+                 keyfunc=lambda *args, **kwargs: pickle.dumps((args,
                                                                 kwargs))):
         if not isinstance(func, property):
             self.func = func
@@ -504,7 +504,7 @@ class Block(object):
                     temp = type_(self._buf, self.absolute_offset(offset), self)
 
                     self._implicit_offset = offset + len(temp)
-        elif isinstance(type_, basestring):
+        elif isinstance(type_, str):
             typename = type_
 
             if count == 0:
@@ -601,11 +601,11 @@ class Block(object):
             if isinstance(v, Block):
                 if hasattr(v, "string"):
                     ret += "%s%s (%s)%s\t%s\n" % \
-                        ("  " * indent, hex(field["offset"]), field["type"], 
+                        ("  " * indent, hex(field["offset"]), field["type"],
                          field["name"], v.string())
                 else:
                     ret += "%s%s (%s)%s\n" % \
-                        ("  " * indent, hex(field["offset"]), field["type"], 
+                        ("  " * indent, hex(field["offset"]), field["type"],
                          field["name"])
                     ret += v.get_all_string(indent + 1)
             elif isinstance(v, types.GeneratorType):
@@ -620,7 +620,7 @@ class Block(object):
                 if isinstance(v, int):
                     v = hex(v)
                 ret += "%s%s (%s)%s\t%s\n" % \
-                    ("  " * indent, hex(field["offset"]), field["type"], 
+                    ("  " * indent, hex(field["offset"]), field["type"],
                      field["name"],  str(v))
         return ret
 
@@ -909,7 +909,7 @@ class Block(object):
             raise OverrunBufferException(o, len(self._buf))
 
         # Yeah, this is ugly
-        h = map(ord, _bin)
+        h = list(map(ord, _bin))
         return "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x" % \
             (h[3], h[2], h[1], h[0],
              h[5], h[4],

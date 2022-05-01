@@ -63,7 +63,7 @@ def main(image_filename, volume_offset, path):
                 ref = MREF(entry.header().mft_reference())
                 entries[ref] = entry.filename_information().filename()
 
-        for k, v in entries.iteritems():
+        for k, v in entries.items():
             g_logger.info("  - %s", v)
 
 

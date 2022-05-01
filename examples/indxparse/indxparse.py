@@ -102,18 +102,18 @@ def make_dump_directory_indices_visitor(formatter):
     def dump_directory_indices_visitor(fs, directory):
         for e in get_directory_index_active_entries(fs, directory):
             try:
-                print(formatter({
+                print((formatter({
                     "active": True,
                     "path": directory.get_full_path(),
-                    "entry": e}))
+                    "entry": e})))
             except Exception as e:
                 g_logger.warning("Failed to output entry: %s", e)
         for e in get_directory_index_inactive_entries(fs, directory):
             try:
-                print(formatter({
+                print((formatter({
                     "active": False,
                     "path": directory.get_full_path(),
-                    "entry": e}))
+                    "entry": e})))
             except Exception as e:
                 g_logger.warning("Failed to output entry: %s", e)
     return dump_directory_indices_visitor
@@ -142,8 +142,8 @@ def safe_date(f):
 def csv_directory_index_formatter(e):
     entry = e["entry"].filename_information()
     fn = entry.filename()
-    f = (u"{status},{path},{filename},{physical_size},{logical_size},{mtime},"
-         u"{atime},{ctime},{crtime}")
+    f = ("{status},{path},{filename},{physical_size},{logical_size},{mtime},"
+         "{atime},{ctime},{crtime}")
     if e["active"]:
         status = "active"
     else:

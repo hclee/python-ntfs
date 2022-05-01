@@ -18,7 +18,7 @@ def main(image_filename, volume_offset):
     with Mmap(image_filename) as buf:
         v = FlatVolume(buf, volume_offset)
         vbr = NTFSVBR(v)
-        print(vbr.get_all_string())
+        print((vbr.get_all_string()))
 
 
 if __name__ == '__main__':

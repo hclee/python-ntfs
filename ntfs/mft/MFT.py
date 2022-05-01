@@ -491,7 +491,7 @@ class INDEX_ALLOCATION(FixupBlock):
         return count
 
     def blocks(self):
-        for i in xrange(INDEX_ALLOCATION.guess_num_blocks(self._buf, self.offset())):
+        for i in range(INDEX_ALLOCATION.guess_num_blocks(self._buf, self.offset())):
             # TODO: don't hardcode things
             yield INDEX_BLOCK(self._buf, self._offset + 0x1000 * i)
 
@@ -688,7 +688,7 @@ class Runentry(Block, Nestable):
         count = 0
         ret = 0
         for b in binary:
-            ret += ord(b) << (8 * count)
+            ret += b << (8 * count)
             count += 1
         return ret
 
@@ -697,11 +697,11 @@ class Runentry(Block, Nestable):
         ret = 0
         working = []
 
-        is_negative = (ord(binary[-1]) & (1 << 7) != 0)
+        is_negative = (binary[-1] & (1 << 7) != 0)
         if is_negative:
-            working = [ord(b) ^ 0xFF for b in binary]
+            working = [b ^ 0xFF for b in binary]
         else:
-            working = [ord(b) for b in binary]
+            working = [b for b in binary]
         for b in working:
             ret += b << (8 * count)
             count += 1
@@ -1245,7 +1245,7 @@ class MFTTreeNode(object):
         self._children_record_numbers.append(child_record_number)
 
     def get_children_nodes(self):
-        return map(lambda n: self._nodes[n], self._children_record_numbers)
+        return [self._nodes[n] for n in self._children_record_numbers]
 
     def get_child_node(self, filename):
         for child in self.get_children_nodes():

@@ -7,7 +7,7 @@ from struct import calcsize
 
 from collections import OrderedDict
 # From: http://code.activestate.com/recipes/577197-sortedcollection/
-from SortedCollection import SortedCollection
+from .SortedCollection import SortedCollection
 
 
 MEGABYTE = 1024 * 1024
@@ -341,7 +341,7 @@ class FileMap(object):
             return buf
 
     def __getslice__(self, start, end):
-        if end == sys.maxint:
+        if end == sys.maxsize:
             end = self._size
 
         start_block_index = start % self._block_size
@@ -383,7 +383,7 @@ class FileMap(object):
 
     @staticmethod
     def test():
-        from cStringIO import StringIO
+        from io import StringIO
         f = StringIO("0123abcd4567efgh")
         buf = FileMap(f, block_size=4, cache_size=2)
 
@@ -443,7 +443,7 @@ def unpack(fmt, string):
 
 
 def struct_test():
-    from cStringIO import StringIO
+    from io import StringIO
     f = StringIO("\x04\x03\x02\x01")
     buf = FileMap(f)
     assert unpack_from("<B", buf, 0x0)[0] == 0x04
@@ -453,15 +453,15 @@ def struct_test():
 
 def test():
     if LRUQueue.test():
-        print "LRUQueue passed tests."
+        print("LRUQueue passed tests.")
     if BoundedLRUQueue.test():
-        print "BoundedLRUQueue passed tests."
+        print("BoundedLRUQueue passed tests.")
     if RangeCache.test():
-        print "RangeCache passed tests."
+        print("RangeCache passed tests.")
     if FileMap.test():
-        print "FileMap passed tests."
+        print("FileMap passed tests.")
     if struct_test():
-        print "struct passed tests."
+        print("struct passed tests.")
 
 
 if __name__ == "__main__":

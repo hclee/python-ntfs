@@ -124,13 +124,13 @@ def main(filename, offset):
             i += 1
 
         # we are at the main records now
-        print '"size", "major", "minor", "file_ref", "file_ref_seq", "file_ref_mft_record_num", "parent_ref", "parent_ref_seq", "parent_ref_mft_record_num", "usn", "timestamp", "flags", "source", "sid", "attrs", "name_length", "unknown", "name"'
+        print('"size", "major", "minor", "file_ref", "file_ref_seq", "file_ref_mft_record_num", "parent_ref", "parent_ref_seq", "parent_ref_mft_record_num", "usn", "timestamp", "flags", "source", "sid", "attrs", "name_length", "unknown", "name"')
         while True:
             buf = f.read(min((f_length - f_offset), 800))
             f.seek(f_offset)
 
             (gap, size, major, minor, file_ref, parent_ref, usn, timestamp, flags, source, sid, attrs, name_length, unknown, name) = process_record(buf)
-            print '"{size:d}", "{major:d}", "{minor:d}", "{file_ref:d}", "{file_ref_seq:d}", "{file_ref_mft_record_num:d}", "{parent_ref:d}", "{parent_ref_seq:d}", "{parent_ref_mft_record_num:d}", "{usn:d}", "{timestamp:s}", "{flags:s}", "{source:d}", "{sid:d}", "{attrs:s}", "{name_length:d}", "{unknown:d}", "{name:s}"'.format(
+            print('"{size:d}", "{major:d}", "{minor:d}", "{file_ref:d}", "{file_ref_seq:d}", "{file_ref_mft_record_num:d}", "{parent_ref:d}", "{parent_ref_seq:d}", "{parent_ref_mft_record_num:d}", "{usn:d}", "{timestamp:s}", "{flags:s}", "{source:d}", "{sid:d}", "{attrs:s}", "{name_length:d}", "{unknown:d}", "{name:s}"'.format(
                         size=size,
                         major=major,
                         minor=minor,
@@ -142,13 +142,13 @@ def main(filename, offset):
                         parent_ref_mft_record_num=MREF(parent_ref),
                         usn=usn,
                         timestamp=parse_windows_timestamp(timestamp).isoformat("T") + "Z",
-                        flags=" ".join([v for (k, v) in flag_def.items() if flags & k]),
+                        flags=" ".join([v for (k, v) in list(flag_def.items()) if flags & k]),
                         source=source,
                         sid=sid,
-                        attrs=" ".join([v for (k, v) in attrs_def.items() if attrs & k]),
+                        attrs=" ".join([v for (k, v) in list(attrs_def.items()) if attrs & k]),
                         name_length=name_length,
                         unknown=unknown,
-                        name=name)
+                        name=name))
 
             f_offset += gap + size
             if f_offset == f_length:

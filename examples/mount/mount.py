@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 import os
 import sys
@@ -101,7 +101,7 @@ class NTFSFuseOperations(Operations):
         dirents = ['.', '..']
         entry = self._get_path_entry(path)
 
-        dirents.extend(map(lambda r: r.get_name(), entry.get_children()))
+        dirents.extend([r.get_name() for r in entry.get_children()])
         return dirents
 
     @log
@@ -164,7 +164,7 @@ class NTFSFuseOperations(Operations):
         The caller must be careful to handle race conditions.
         @rtype: int
         """
-        for i in xrange(65534):
+        for i in range(65534):
             if i not in self._opened_files:
                 return i
 

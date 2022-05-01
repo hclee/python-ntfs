@@ -15,7 +15,11 @@ class Volume(Block):
         self._sector_size = sector_size
 
     def __getitem__(self, index):
-        return self._buf[index + self._offset]
+        if isinstance(index, slice):
+            return self._buf[index.start+self._offset :
+                             index.stop+self._offset]
+        else:
+            return self._buf[index + self._offset]
 
     def __getslice__(self, start, end):
         return self._buf[start + self._offset:end + self._offset]
@@ -39,12 +43,12 @@ def main():
     with open(sys.argv[1], "rb") as f:
         buf = FileMap(f)
         v = FlatVolume(buf, int(sys.argv[2]))
-        print list(v[3:3+4])
+        print((list(v[3:3+4])))
 
     # probably prefer this one
     with Mmap(sys.argv[1]) as buf:
         v = FlatVolume(buf, int(sys.argv[2]))
-        print list(v[3:3+4])
+        print((list(v[3:3+4])))
 
 
 if __name__ == "__main__":

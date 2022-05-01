@@ -24,7 +24,7 @@ def main(image_filename, volume_offset, record_number):
         v = FlatVolume(buf, volume_offset)
         fs = NTFSFilesystem(v)
         record = fs.get_record(record_number)
-        print(record.get_all_string())
+        print((record.get_all_string()))
 
 
 if __name__ == '__main__':
